@@ -13,6 +13,5 @@ class GetConnection:
             port='5432',
             user='default',
             password='LTqX4YxZ5eQt',
-            dbname='verceldb',
-            sslmode='require'
+            dbname='verceldb'
         )
