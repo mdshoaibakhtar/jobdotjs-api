@@ -45,7 +45,7 @@ class UserManagement(APIView):
             )
 
         query = """
-            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, password, confirm_password, job_id)
+            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, password, confirm_password, website)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
 
@@ -57,7 +57,7 @@ class UserManagement(APIView):
             data['is_organization'],
             data['password'],
             data['confirm_password'],
-            data['job_id']
+            data['website']
         ))
 
         connection.commit()
