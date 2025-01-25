@@ -7,21 +7,19 @@ from rest_framework import status
 class Test_API(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data
-        print('Hello data is here', data)
         return Response(
                 {
-                    'statusCode': status.HTTP_200_OK,
+                    'status_code': status.HTTP_200_OK,
                     'data': data
                 },
                 status=status.HTTP_200_OK
             )
 
     def get(self, request, *args, **kwargs):
-        print('Hello here')
         return Response(
                 {
-                    'statusCode': status.HTTP_200_OK,
-                    'result':'I am here'
+                    'status_code': status.HTTP_200_OK,
+                    'data':'API is working fine!'
                 },
                 status=status.HTTP_200_OK
             )

@@ -24,7 +24,7 @@ class UserManagement(APIView):
                 list_of_users.append(users)
         return Response(
             {
-                'statusCode': status.HTTP_200_OK,
+                'status_code': status.HTTP_200_OK,
                 'result': list_of_users
             },
             status=status.HTTP_200_OK
@@ -39,7 +39,7 @@ class UserManagement(APIView):
         if(data['password'] != data['confirm_password']):
             return Response(
                 {
-                'statusCode': status.HTTP_400_BAD_REQUEST,
+                'status_code': status.HTTP_400_BAD_REQUEST,
                 'result': 'Password & Confirm password not matched'
             }
             )
@@ -66,7 +66,7 @@ class UserManagement(APIView):
         if(otp_response.get('status_code') == 200):
             return Response(
                 {
-                    'statusCode': status.HTTP_200_OK,
+                    'status_code': status.HTTP_200_OK,
                     'result': 'User created successfully'
                 },
                 status=status.HTTP_200_OK
@@ -74,7 +74,7 @@ class UserManagement(APIView):
             
         return Response(
                 {
-                    'statusCode': status.HTTP_400_OK,
+                    'status_code': status.HTTP_400_OK,
                     'result': 'Unable to send OTP.'
                 },
                 status=status.HTTP_400_OK
@@ -90,7 +90,7 @@ class AuthenticateUser(APIView):
         try:
             if not data.get('email') or not data.get('password'):
                 return Response({
-                    'statusCode': status.HTTP_400_BAD_REQUEST,
+                    'status_code': status.HTTP_400_BAD_REQUEST,
                     'error': 'Email and password are required.'
                 })
 
@@ -100,7 +100,7 @@ class AuthenticateUser(APIView):
 
             if user is None:
                 return Response({
-                    'statusCode': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR,
                     'error': 'User not found.'
                 })
 
@@ -108,7 +108,7 @@ class AuthenticateUser(APIView):
 
             if data['password'] != users['password']:
                 return Response({
-                    'statusCode': status.HTTP_401_UNAUTHORIZED,
+                    'status_code': status.HTTP_401_UNAUTHORIZED,
                     'error': 'Invalid email or password.'
                 })
 
@@ -117,7 +117,7 @@ class AuthenticateUser(APIView):
                 token = TokenManagement.token_management(user['email'])
                 print('token', token)
             return Response({
-                'statusCode': status.HTTP_200_OK,
+                'status_code': status.HTTP_200_OK,
                 'message': 'User authenticated successfully',
                 'token': token,
                 'data': {
@@ -129,7 +129,7 @@ class AuthenticateUser(APIView):
 
         except Exception as e:
             return Response({
-                'statusCode': 500,
+                'status_code': 500,
                 'error': str(e)
             })
         finally:

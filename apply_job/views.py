@@ -29,7 +29,7 @@ class ApplyJob(APIView):
         connection.commit()
         return Response(
             {
-                'statusCode': status.HTTP_200_OK,
+                'status_code': status.HTTP_200_OK,
                 'result': 'Applied successfully'
             },
             status=status.HTTP_200_OK

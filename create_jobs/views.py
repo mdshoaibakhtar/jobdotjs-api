@@ -56,7 +56,7 @@ class JobCreatorHandler(APIView):
         connection.commit()
         return Response(
             {
-                'statusCode': status.HTTP_200_OK,
+                'status_code': status.HTTP_200_OK,
                 'result': 'Job created successfully'
             },
             status=status.HTTP_200_OK
@@ -77,7 +77,7 @@ class JobCreatorHandler(APIView):
                 list_of_users.append(users)
         return Response(
             {
-                'statusCode': status.HTTP_200_OK,
+                'status_code': status.HTTP_200_OK,
                 'result': list_of_users
             },
             status=status.HTTP_200_OK
