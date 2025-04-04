@@ -8,9 +8,9 @@ class GetConnection:
     @staticmethod
     def get_connection():
         # Explicitly set and log the path to your .env file
-        env_path = Path(__file__).resolve().parent.parent / ".env"
-        print("Looking for .env at:", env_path)
-        load_dotenv(dotenv_path=env_path)
+        # env_path = Path(__file__).resolve().parent.parent / ".env"
+        print("Looking for .env at:")
+        load_dotenv(dotenv_path='../.env')
 
         db_host = os.getenv("DB_HOST")
         db_port = os.getenv("DB_PORT")
