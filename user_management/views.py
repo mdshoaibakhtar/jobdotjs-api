@@ -14,6 +14,7 @@ class UserManagement(APIView):
         cursor = connection.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute("SELECT * FROM users")
+        print('Fetch User')
         data = cursor.fetchall()
         list_of_users = []
         if data:
