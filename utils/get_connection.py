@@ -7,9 +7,9 @@ from psycopg2.extras import RealDictCursor
 class GetConnection:
     @staticmethod
     def get_connection():
-        # Set path to the .env file explicitly
-        print('Load connection details')
+        # Explicitly set and log the path to your .env file
         env_path = Path(__file__).resolve().parent.parent / ".env"
+        print("Looking for .env at:", env_path)
         load_dotenv(dotenv_path=env_path)
 
         db_host = os.getenv("DB_HOST")
