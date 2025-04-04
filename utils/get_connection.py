@@ -14,6 +14,8 @@ class GetConnection:
         db_user = os.getenv("DB_USER")
         db_password = os.getenv("DB_PASSWORD")
         db_name = os.getenv("DB_NAME")
+        print('db_host:', db_host)
+        print('db_password:', db_password)
 
         # Return the database connection
         return psycopg2.connect(
