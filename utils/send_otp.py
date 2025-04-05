@@ -7,6 +7,7 @@ from rest_framework import status
 from utils.get_connection import GetConnection
 from psycopg2.extras import RealDictCursor
 import psycopg2
+from utils.send_email import EmailSender
 
 def generate_otp():
     digits = string.digits
@@ -15,34 +16,42 @@ def generate_otp():
 
 
 class SendOTP(APIView):
-    def send_otp(to_phone_number):
+    def send_otp(to_email, first_name):
         otp_code = generate_otp()
         
         connection = GetConnection.get_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         
-        print('otp_code', otp_code)
+        emailer = EmailSender()
+        sent_email = emailer.send_email(
+            to_email=to_email,
+            subject="OTP to verify your email",
+            body='Hey! \nPlease enter the following OTP to verify your email.\n'+otp_code
+        ).__dict__
+        print('sent_email otp', otp_code)
+
+        email_response = sent_email.get('data')
+        if(email_response.get('status_code') == 200):
+            cursor.execute("""UPDATE users SET otp = %s WHERE email=%s""", (
+                otp_code,
+                to_email,
+            ))
+            connection.commit()
         
-        # client = Client(account_sid, auth_token)
-        
-        # message = client.messages.create(
-        #     body=f"Your OTP code is {otp_code}",
-        #     from_=twilio_phone_number,
-        #     to=to_phone_number
-        # )
-        
-        cursor.execute("""UPDATE users SET otp = %s WHERE phone_number=%s""", (
-            otp_code,
-            to_phone_number,
-        ))
-        connection.commit()
-        
+
+            return Response(
+                {
+                    'status_code': status.HTTP_200_OK,
+                    'message': 'OTP sent successfully'
+                },
+                status=status.HTTP_200_OK
+            )
         return Response(
             {
-                'status_code': status.HTTP_200_OK,
-                'result': 'OTP sent successfully'
+                'status_code': status.HTTP_400_BAD_REQUEST,
+                'message': 'OTP sent fail'
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_400_BAD_REQUEST
         )
         
     def expire_otp(to_phone_number):
@@ -58,7 +67,7 @@ class SendOTP(APIView):
         return Response(
             {
                 'status_code': status.HTTP_200_OK,
-                'result': 'OTP expired'
+                'message': 'OTP expired'
             },
             status=status.HTTP_200_OK
         )

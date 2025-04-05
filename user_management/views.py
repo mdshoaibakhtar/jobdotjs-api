@@ -26,7 +26,8 @@ class UserManagement(APIView):
         return Response(
             {
                 'status_code': status.HTTP_200_OK,
-                'result': list_of_users
+                'message': 'User fetched successfully',
+                'data': list_of_users
             },
             status=status.HTTP_200_OK
         )
@@ -36,18 +37,9 @@ class UserManagement(APIView):
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         data = request.data
 
-
-        if(data['password'] != data['confirm_password']):
-            return Response(
-                {
-                'status_code': status.HTTP_400_BAD_REQUEST,
-                'result': 'Password & Confirm password not matched'
-            }
-            )
-
         query = """
-            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, password, confirm_password, website)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, website)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
 
         cursor.execute(query, (
@@ -56,19 +48,17 @@ class UserManagement(APIView):
             data['first_name'],
             data['last_name'],
             data['is_organization'],
-            data['password'],
-            data['confirm_password'],
             data['website']
         ))
 
         connection.commit()
-        send_otp = SendOTP.send_otp(data['phone_number']).__dict__
+        send_otp = SendOTP.send_otp(data['email'], data['first_name']).__dict__
         otp_response = send_otp.get('data')
         if(otp_response.get('status_code') == 200):
             return Response(
                 {
                     'status_code': status.HTTP_200_OK,
-                    'result': 'User created successfully'
+                    'message': 'User created successfully'
                 },
                 status=status.HTTP_200_OK
             )
@@ -76,7 +66,7 @@ class UserManagement(APIView):
         return Response(
                 {
                     'status_code': status.HTTP_400_OK,
-                    'result': 'Unable to send OTP.'
+                    'message': 'Unable to send OTP.'
                 },
                 status=status.HTTP_400_OK
             )

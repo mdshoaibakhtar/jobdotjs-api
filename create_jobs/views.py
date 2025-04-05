@@ -57,7 +57,7 @@ class JobCreatorHandler(APIView):
         return Response(
             {
                 'status_code': status.HTTP_200_OK,
-                'result': 'Job created successfully'
+                'message': 'Job created successfully'
             },
             status=status.HTTP_200_OK
         )
@@ -68,17 +68,18 @@ class JobCreatorHandler(APIView):
 
         cursor.execute("SELECT * FROM jobs")
         data = cursor.fetchall()
-        list_of_users = []
+        list_of_job = []
         if data:
             for i in data:
                 users = {}
                 for key, value in i.items():
                     users[key] = value
-                list_of_users.append(users)
+                list_of_job.append(users)
         return Response(
             {
                 'status_code': status.HTTP_200_OK,
-                'result': list_of_users
+                'message': 'Job fetched successfully',
+                'data':list_of_job
             },
             status=status.HTTP_200_OK
         )

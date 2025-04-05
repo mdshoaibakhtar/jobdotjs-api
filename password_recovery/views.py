@@ -96,7 +96,7 @@ class ForgotPassword(APIView):
             return Response(
                 {
                     'status_code': status.HTTP_200_OK,
-                    'result': 'Sent OTP successfully'
+                    'message': 'Sent OTP successfully'
                 },
                 status=status.HTTP_200_OK
             )

@@ -30,7 +30,7 @@ class ApplyJob(APIView):
         return Response(
             {
                 'status_code': status.HTTP_200_OK,
-                'result': 'Applied successfully'
+                'message': 'Applied successfully'
             },
             status=status.HTTP_200_OK
         )
