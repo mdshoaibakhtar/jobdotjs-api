@@ -37,7 +37,7 @@ class VerifyOTP(APIView):
             SendOTP.expire_otp(data['email'])
             return Response(
                 {
-                    'statud_code' : status.HTTP_200_OK,
+                    'status_code' : status.HTTP_200_OK,
                     'message' : 'OTP verified'
                 },
                 status = status.HTTP_200_OK
@@ -45,7 +45,7 @@ class VerifyOTP(APIView):
             
         return Response(
                 {
-                    'statud_code' : status.HTTP_400_BAD_REQUEST,
+                    'status_code' : status.HTTP_400_BAD_REQUEST,
                     'message' : 'Invalid OTP'
                 },
                 status = status.HTTP_400_BAD_REQUEST
@@ -59,25 +59,16 @@ class ResetPassword(APIView):
         
         print('Data', data)
         
-        if(data['password'] != data['confirm_password']):
-            return Response(
-                    {
-                        'statud_code' : status.HTTP_400_BAD_REQUEST,
-                        'message' : 'Password and Confirm password not matched'
-                    },
-                    status = status.HTTP_400_BAD_REQUEST
-                )
-            
-        cursor.execute("""UPDATE users SET password = %s, confirm_password = %s WHERE phone_number=%s""", (
+        cursor.execute("""UPDATE users SET password = %s, is_verified = %s WHERE email=%s""", (
             data['password'],
-            data['confirm_password'],
-            data['phone_number'],
+            True,
+            data['email'],
         ))
         connection.commit()
         
         return Response(
                 {
-                    'statud_code' : status.HTTP_200_OK,
+                    'status_code' : status.HTTP_200_OK,
                     'message' : 'Successfully reset password.'
                 },
                 status = status.HTTP_200_OK
@@ -104,7 +95,7 @@ class ForgotPassword(APIView):
         
         return Response(
                 {
-                    'statud_code' : status.HTTP_400_BAD_REQUEST,
+                    'status_code' : status.HTTP_400_BAD_REQUEST,
                     'message' : 'Please try again later.'
                 },
                 status = status.HTTP_400_BAD_REQUEST
