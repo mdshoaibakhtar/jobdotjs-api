@@ -61,6 +61,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://jobdotjs.vercel.app"
 ]
 # If you need to support cookies and HTTP authentication
 CORS_ALLOW_CREDENTIALS = True
