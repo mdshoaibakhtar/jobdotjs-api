@@ -13,8 +13,8 @@ class VerifyOTP(APIView):
         connection = GetConnection.get_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         data = request.data
-        cursor.execute("SELECT otp FROM users WHERE phone_number = %s", (
-            data['phone_number'],
+        cursor.execute("SELECT otp FROM users WHERE email = %s", (
+            data['email'],
         ))
         resp = cursor.fetchone()
 
@@ -23,7 +23,7 @@ class VerifyOTP(APIView):
         if otp is None:
             return Response({
                 'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                'error': 'Please re-send otp'
+                'error': 'Not matched'
             })
         
         if otp == 0:
@@ -34,7 +34,7 @@ class VerifyOTP(APIView):
             
         
         if(data.get('otp') == otp):
-            SendOTP.expire_otp(data['phone_number'])
+            SendOTP.expire_otp(data['email'])
             return Response(
                 {
                     'statud_code' : status.HTTP_200_OK,
