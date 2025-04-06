@@ -93,7 +93,7 @@ class AuthenticateUser(APIView):
             if user is None:
                 return Response({
                     'status_code': status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    'error': 'User not found.'
+                    'message': 'User not found.'
                 })
 
             users = {key: value for key, value in user.items()}
@@ -101,7 +101,7 @@ class AuthenticateUser(APIView):
             if data['password'] != users['password']:
                 return Response({
                     'status_code': status.HTTP_401_UNAUTHORIZED,
-                    'error': 'Invalid email or password.'
+                    'message': 'Invalid email or password.'
                 })
 
             if user['email'] is not None:
