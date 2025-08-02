@@ -5,6 +5,7 @@ from psycopg2.extras import RealDictCursor
 from utils.get_connection import GetConnection
 import psycopg2
 from utils.token_management import TokenManagement
+import requests
 
 
 class JobCreatorHandler(APIView):
@@ -34,7 +35,7 @@ class JobCreatorHandler(APIView):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-        print('data',data)
+        print('data', data)
         cursor.execute(query, (
             data['job_role'],
             data['job_description'],
@@ -79,8 +80,31 @@ class JobCreatorHandler(APIView):
             {
                 'status_code': status.HTTP_200_OK,
                 'message': 'Job fetched successfully',
-                'data':list_of_job
+                'data': list_of_job
             },
             status=status.HTTP_200_OK
         )
 
+
+class FecthJobListUsingThirdPartyAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        url = "https://backend.engineerhub.in/api/v1/getHiringByOpportunityType/?search=&opportunityType=Job&pageNo=1&limit=100"  # Example API endpoint
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return Response(
+                {
+                    'status_code': status.HTTP_200_OK,
+                    'message': 'Job fetched successfully',
+                    'data': response.json()['data']
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {
+                    'status_code': 400,
+                    'message': 'Something went wrong'
+                },
+                status=status.HTTP_200_OK
+            )
