@@ -87,16 +87,25 @@ class JobCreatorHandler(APIView):
 
 
 class FecthJobListUsingThirdPartyAPI(APIView):
-    def get(self, request, *args, **kwargs):
-        url = "https://backend.engineerhub.in/api/v1/getHiringByOpportunityType/?search=&opportunityType=Job&pageNo=1&limit=100"  # Example API endpoint
-        response = requests.get(url)
+    def fetch_job_list(self):
+        url = "https://backend.engineerhub.in/api/v1/getHiringByOpportunityType/?search=&opportunityType=Job&pageNo=1&limit=10"  # Example API endpoint
+        return requests.get(url)
 
+    def get(self, request, *args, **kwargs):
+        job_id = request.GET.get('job_id')
+        response = FecthJobListUsingThirdPartyAPI.fetch_job_list(self)
         if response.status_code == 200:
+            response = response.json()['data']
+            if job_id is not None:
+                for each_job in response:
+                    if each_job['_id'] == job_id:
+                        response = each_job
+            
             return Response(
                 {
                     'status_code': status.HTTP_200_OK,
                     'message': 'Job fetched successfully',
-                    'data': response.json()['data']
+                    'data': response
                 },
                 status=status.HTTP_200_OK
             )
