@@ -88,7 +88,7 @@ class JobCreatorHandler(APIView):
 
 class FecthJobListUsingThirdPartyAPI(APIView):
     def fetch_job_list(self):
-        url = "https://backend.engineerhub.in/api/v1/getHiringByOpportunityType/?search=&opportunityType=Job&pageNo=1&limit=10"  # Example API endpoint
+        url = "https://backend.engineerhub.in/api/v1/getHiringByOpportunityType/?search=&opportunityType=Job&pageNo=1&limit=100"  # Example API endpoint
         return requests.get(url)
 
     def get(self, request, *args, **kwargs):
