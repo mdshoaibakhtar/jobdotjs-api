@@ -56,9 +56,22 @@ class UserManagement(APIView):
         print(user_id)
 
         query = """
-            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, website, is_verified, user_id)
+            INSERT INTO users (email, phone_number, first_name, last_name, is_organization, website, is_verified, user_id)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
+
+        details_query = """
+            INSERT INTO user_details (email, phone_number, first_name, last_name, user_id)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(details_query, (
+            data['email'],
+            data['phone_number'],
+            data['first_name'],
+            data['last_name'],
+            user_id,
+        ))
 
         cursor.execute(query, (
             data['email'],
@@ -93,6 +106,7 @@ class UserManagement(APIView):
 
 
 class AuthenticateUser(APIView):
+    # User Log In
     def post(self, request, *args, **kwargs):
         connection = GetConnection.get_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
@@ -116,6 +130,13 @@ class AuthenticateUser(APIView):
                 })
 
             users = {key: value for key, value in user.items()}
+            print('users', users)
+
+            if users['password'] is None:
+                return Response({
+                    'status_code': status.HTTP_401_UNAUTHORIZED,
+                    'message': 'Please verify your email.'
+                })
 
             if data['password'] != users['password']:
                 return Response({
@@ -145,3 +166,68 @@ class AuthenticateUser(APIView):
             })
         finally:
             connection.close()
+
+
+class UserProfile(APIView):
+    def get(self, request, *args, **kwargs):
+        connection = GetConnection.get_connection()
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+        user_id = request.GET.get('user_id')
+    
+        print('Fetching user details..')
+        cursor.execute("SELECT * FROM user_details WHERE user_id = %s", (user_id,))
+        user = cursor.fetchone()
+        users = {key: value for key, value in user.items()}
+
+        return Response(
+            {
+                'status_code': status.HTTP_200_OK,
+                'message': 'User fetched successfully',
+                'data': users
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+
+        # personal_details
+        # first_name
+        # last_name
+        # email
+        # phone_number
+        # about
+        # date_of_birth
+        # permanent_address
+        # current_address
+        # current_ctc
+        # expected_ctc
+        # notice_period
+        # skills []
+        # preferred_location []
+        # preferred_role []
+        # work_type
+        # work_mode
+        # resume_drive_link
+        # year_of_experience
+
+        # experience
+        # company_name
+        # job_title
+        # work_type FT/IN/CON
+        # start_date
+        # end_date
+        # currently_working
+
+        # project
+        # title
+        # description []
+        # url
+        # github_link
+
+        # education
+        # course/degree
+        # majority
+        # institute_name
+        # start_date
+        # end_date
+        # currently_pursuing
