@@ -6,40 +6,58 @@ from utils.get_connection import GetConnection
 import psycopg2
 from utils.token_management import TokenManagement
 from utils.send_otp import SendOTP
-
+import shortuuid
 
 class UserManagement(APIView):
+    # /fetch-user?user_id=6qCKSaqa
     def get(self, request, *args, **kwargs):
         connection = GetConnection.get_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
+        user_id = request.GET.get('user_id')
+        print('Fetch User', user_id)
+        if user_id is None:
+            cursor.execute("SELECT * FROM users")
+            data = cursor.fetchall()
+            list_of_users = []
+            if data:
+                for i in data:
+                    users = {}
+                    for key, value in i.items():
+                        users[key] = value
+                    list_of_users.append(users)
+            return Response(
+                {
+                    'status_code': status.HTTP_200_OK,
+                    'message': 'User fetched successfully',
+                    'data': list_of_users
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            print('Under else')
+            cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            users = {key: value for key, value in user.items()}
 
-        cursor.execute("SELECT * FROM users")
-        print('Fetch User')
-        data = cursor.fetchall()
-        list_of_users = []
-        if data:
-            for i in data:
-                users = {}
-                for key, value in i.items():
-                    users[key] = value
-                list_of_users.append(users)
-        return Response(
-            {
-                'status_code': status.HTTP_200_OK,
-                'message': 'User fetched successfully',
-                'data': list_of_users
-            },
-            status=status.HTTP_200_OK
-        )
+            return Response(
+                {
+                    'status_code': status.HTTP_200_OK,
+                    'message': 'User fetched successfully',
+                    'data': users
+                },
+                status=status.HTTP_200_OK
+            )
 
     def post(self, request, *args, **kwargs):
         connection = GetConnection.get_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         data = request.data
+        user_id = shortuuid.uuid()[:8]
+        print(user_id)
 
         query = """
-            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, website, is_verified)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO users (email, phone_number, first_name, last_name,is_organization, website, is_verified, user_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         cursor.execute(query, (
@@ -50,6 +68,7 @@ class UserManagement(APIView):
             data['is_organization'],
             data['website'],
             data['is_verified'],
+            user_id,
         ))
 
         connection.commit()
@@ -106,7 +125,7 @@ class AuthenticateUser(APIView):
 
             if user['email'] is not None:
                 print('Valid user, Now generating token...')
-                token = TokenManagement.token_management(user['email'])
+                token = TokenManagement.token_management(user['email'], user['first_name'],user['user_id'])
                 print('token', token)
             return Response({
                 'status_code': status.HTTP_200_OK,
